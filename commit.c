@@ -1,3 +1,14 @@
+#include "commit.h"
+#include "index.h"
+#include "tree.h"
+#include "pes.h"  // <--- Make sure this one is here!
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
+
 int commit_create(const char *message, ObjectID *commit_id_out) {
     // 1. Create a "Tree" from the Index
     // This turns your staged files into a permanent snapshot in the object store.
