@@ -1,0 +1,14 @@
+5.1
+Answer: To implement checkout, the file .pes/HEAD must be updated to point to the new branch (e.g., "ref: refs/heads/branch-name"). The working directory must then be updated by reading the tree object of the target commit and overwriting the physical files on disk to match that snapshot. This is complex because of safety: the system must prevent overwriting "dirty" files (unsaved changes) and must correctly handle files that exist in one branch but not the other.
+
+5.2
+Answer: Conflict detection is done by comparing the working directory, the index, and the HEAD commit. First, compare the file on disk to its entry in the index (using mtime and size). If they differ, the file is modified but not staged. Second, compare the index hash to the hash in the current HEAD commit. If these differ, the file is staged but not committed. If either comparison shows a difference and the target branch also has a different version of that file, a "dirty" conflict exists.
+
+5.3
+Answer: Commits in this state work normally, but they are not associated with any branch name. If the user switches to another branch, these commits become "orphaned" and won't appear in a normal log. To recover them, the user must find the specific commit hash of the orphaned work and manually create a new branch reference for it in .pes/refs/heads/.
+
+6.1
+Answer: The standard algorithm is "Mark and Sweep." You start at the "roots" (HEAD and all branch refs) and recursively follow every pointer from Commits to Trees to Blobs, "marking" everything you find as reachable. Then, you "sweep" the object store and delete any file that wasn't marked. A Hash Set or Bloom Filter is the most efficient way to track these hashes. For 100,000 commits, you would likely visit between 500,000 and 1,000,000 total objects.
+
+6.2
+Answer: Concurrent GC is dangerous because it might delete an object that is currently being created. For example, if a "pes add" command writes a new blob but hasn't yet created the commit that points to it, the GC might see that blob as unreachable and delete it. The commit would then fail or be corrupted. Git avoids this by using a "grace period" (usually 14 days), where the GC refuses to delete any object with a recent modification timestamp.
