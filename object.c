@@ -25,7 +25,6 @@ void hash_to_hex(const ObjectID *id, char *hex_out) {
     }
     hex_out[HASH_HEX_SIZE] = '\0';
 }
-
 int hex_to_hash(const char *hex, ObjectID *id_out) {
     if (strlen(hex) < HASH_HEX_SIZE) return -1;
     for (int i = 0; i < HASH_SIZE; i++) {
@@ -231,4 +230,4 @@ int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_
 
     free(buffer);
     return 0;
-}
+} //
